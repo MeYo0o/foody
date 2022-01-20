@@ -7,12 +7,12 @@ class TopBorderAndLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 585.h,
+      height: 485.h,
       child: Stack(
         children: [
           Image.asset(
             'assets/images/orange_top_shape.png',
-            height: 500.h,
+            height: 382.h,
             width: 375.w,
             fit: BoxFit.cover,
           ),
@@ -20,7 +20,7 @@ class TopBorderAndLogo extends StatelessWidget {
             child: Image.asset('assets/images/logo.png'),
             height: 185.h,
             width: 218.w,
-            top: 365.h,
+            top: 300.h,
             left: 80.w,
           ),
         ],

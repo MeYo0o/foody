@@ -1,19 +1,17 @@
-import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foody/screens/auth_screen.dart';
+import 'package:foody/constants/dependencies/app_bindings.dart';
+import 'package:foody/firebase_options.dart';
+import 'package:foody/screens/navigation_screen.dart';
 import 'package:get/get.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-import 'screens/splash_screen.dart';
-
-void main() {
-  DevicePreview(
-    enabled: !kReleaseMode,
-    builder: (context) => const Foody(), // Wrap your app
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  // runApp(const Foody());
+  runApp(const Foody());
 }
 
 class Foody extends StatelessWidget {
@@ -25,14 +23,9 @@ class Foody extends StatelessWidget {
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: () => MaterialApp(
-        useInheritedMediaQuery: true,
-        locale: DevicePreview.locale(context),
-        // builder: DevicePreview.appBuilder,
-        theme: ThemeData.light(),
-        darkTheme: ThemeData.dark(),
+      builder: () => GetMaterialApp(
+        initialBinding: AppBindings(),
         builder: (context, widget) {
-          DevicePreview.appBuilder(context, widget);
           ScreenUtil.setContext(context);
           return MediaQuery(
               data: MediaQuery.of(context)
@@ -41,7 +34,7 @@ class Foody extends StatelessWidget {
         },
         debugShowCheckedModeBanner: false,
         title: 'Foody',
-        home: const AuthScreen(),
+        home: const NavigationScreen(),
       ),
     );
   }

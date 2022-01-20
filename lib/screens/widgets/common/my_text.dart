@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class MyText extends StatelessWidget {
   final String text;
   final double? fontSize;
   final Color? color;
-  final TextStyle? textStyle;
+  final FontWeight? fontWeight;
   final EdgeInsetsGeometry? containerPadding;
   final Alignment? containerAlignment;
   final TextAlign? textAlign;
+  final TextStyle? textStyle;
 
   const MyText({
     Key? key,
@@ -17,6 +17,7 @@ class MyText extends StatelessWidget {
     this.fontSize,
     this.color,
     this.textStyle,
+    this.fontWeight,
     this.containerPadding,
     this.containerAlignment,
     this.textAlign,
@@ -30,9 +31,11 @@ class MyText extends StatelessWidget {
       child: Text(
         text,
         style: textStyle ??
-            GoogleFonts.poppins(
+            TextStyle(
               color: color ?? Colors.black,
-              fontSize: fontSize ?? 18.sp,
+              fontWeight: fontWeight,
+              fontSize: fontSize,
+              fontFamily: 'Metropolis',
             ),
         textAlign: textAlign ?? TextAlign.center,
       ),

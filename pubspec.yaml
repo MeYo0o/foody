@@ -14,9 +14,16 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_screenutil: ^5.1.0
   get: ^4.6.1
-  google_fonts: ^2.2.0
+#  google_fonts: ^2.2.0
   flutter_launcher_icons: ^0.9.2
-  device_preview: ^1.0.0
+#  device_preview: ^1.0.0
+  font_awesome_flutter: ^9.2.0
+  pin_code_fields: ^7.3.0
+  smooth_page_indicator: ^1.0.0+2
+  firebase_core: ^1.11.0
+  firebase_auth: ^3.3.5
+  google_sign_in: ^5.2.3
+  flutter_facebook_auth: ^4.0.1
 
 dev_dependencies:
   flutter_test:
@@ -35,7 +42,14 @@ flutter:
   fonts:
     - family: Metropolis
       fonts:
+        - asset: assets/fonts/Metropolis-Regular.otf
+          weight: 400
         - asset: assets/fonts/Metropolis-Medium.otf
+          weight: 500
+        - asset: assets/fonts/Metropolis-SemiBold.otf
+          weight: 600
+        - asset: assets/fonts/Metropolis-ExtraBold.otf
+          weight: 800
 
 
   
