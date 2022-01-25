@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:foody/constants/colors.dart';
 import 'package:foody/screens/widgets/common/my_text.dart';
 
 class SocialButton extends StatelessWidget {
@@ -10,11 +8,13 @@ class SocialButton extends StatelessWidget {
     required this.socialTitle,
     required this.socialIcon,
     required this.socialColor,
+    required this.func,
   }) : super(key: key);
 
   final String socialTitle;
   final IconData socialIcon;
   final Color socialColor;
+  final Future<void> Function() func;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class SocialButton extends StatelessWidget {
           ),
           fixedSize: Size(307.w, 56.h),
         ),
-        onPressed: () {},
+        onPressed: func,
       ),
     );
   }

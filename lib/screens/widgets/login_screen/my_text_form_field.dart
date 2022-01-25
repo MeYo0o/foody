@@ -7,12 +7,14 @@ class MyTextFormField extends StatelessWidget {
   const MyTextFormField({
     Key? key,
     required this.controller,
+    this.passwordController,
     required this.hintText,
     required this.formFieldType,
     this.textInputAction,
     this.padding,
   }) : super(key: key);
   final TextEditingController controller;
+  final TextEditingController? passwordController;
   final String hintText;
   final FormFieldType formFieldType;
   final TextInputAction? textInputAction;
@@ -25,6 +27,7 @@ class MyTextFormField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         cursorColor: kMainAppColor,
+        autocorrect: false,
         keyboardType: formFieldType == FormFieldType.email
             ? TextInputType.emailAddress
             : formFieldType == FormFieldType.number
@@ -64,6 +67,24 @@ class MyTextFormField extends StatelessWidget {
             fontFamily: 'Metropolis',
           ),
         ),
+        validator: (String? textValue) {
+          if (textValue == null || textValue.isEmpty) {
+            return 'This field can\'t be empty';
+          } else if (hintText == 'Mobile No') {
+            if (controller.text.length < 11) {
+              return 'please enter a valid number';
+            }
+          } else if (hintText == 'Password' &&
+              controller.text.length < 8) {
+            return 'Please Enter At least 8 character password';
+          } else if (hintText == 'Confirm Password') {
+            if (controller.text != passwordController!.text) {
+              return 'Passwords don\'t match';
+            }
+          } else {
+            return null;
+          }
+        },
       ),
     );
   }

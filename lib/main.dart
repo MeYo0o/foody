@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foody/constants/dependencies/app_bindings.dart';
 import 'package:foody/firebase_options.dart';
 import 'package:foody/screens/navigation_screen.dart';
+import 'package:foody/screens/profile_screen.dart';
+import 'package:foody/screens/reset_password_screen.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+import 'constants/bindings/app_bindings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +37,7 @@ class Foody extends StatelessWidget {
         },
         debugShowCheckedModeBanner: false,
         title: 'Foody',
-        home: const NavigationScreen(),
+        home: const ProfileScreen(),
       ),
     );
   }

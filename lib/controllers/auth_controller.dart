@@ -2,7 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:foody/constants/colors.dart';
+import 'package:foody/core/services/firestore_user.dart';
+import 'package:foody/models/user_model.dart';
+import 'package:foody/screens/home_screen.dart';
 import 'package:foody/screens/navigation_screen.dart';
+import 'package:foody/screens/widgets/common/my_text.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -14,21 +19,57 @@ enum AuthType {
 }
 
 class AuthController extends GetxController {
+  //Firebase
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
   AuthType _signInType = AuthType.emailSignIn;
-
-  late final Rxn<User?> _user;
+  final Rxn<User> _user = Rxn<User>();
   User? get user => _user.value;
+  var userData;
+
+  //Loading Indicator
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  void _changeLoadingStatus(bool newValue) {
+    _isLoading = newValue;
+    update();
+  }
+
+  //Login
+  final TextEditingController loginEmail = TextEditingController();
+  final TextEditingController loginPassword = TextEditingController();
+  final loginFormKey = GlobalKey<FormState>();
+
+  //Sign Up
+  final TextEditingController signupName = TextEditingController();
+  final TextEditingController signupEmail = TextEditingController();
+  final TextEditingController signupMobileNumber = TextEditingController();
+  final TextEditingController signupAddress = TextEditingController();
+  final TextEditingController signupPassword = TextEditingController();
+  final TextEditingController signupConfirmPassword =
+      TextEditingController();
+  final signupFormKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    loginEmail.dispose();
+    loginPassword.dispose();
+    signupName.dispose();
+    signupMobileNumber.dispose();
+    signupAddress.dispose();
+    signupConfirmPassword.dispose();
+    super.dispose();
+  }
 
   @override
   void onInit() {
-    _user.bindStream(_auth.authStateChanges());
     super.onInit();
+    _user.bindStream(_auth.authStateChanges());
   }
 
   //Google SignIn
   void signInWithGoogle() async {
+    //Start Loading
+    _changeLoadingStatus(true);
     //define signIn Method
     _signInType = AuthType.googleSignIn;
     try {
@@ -48,10 +89,12 @@ class AuthController extends GetxController {
       );
       // print(credential);
 
-      // await _auth
-      //     .signInWithCredential(googleAuthCredential)
-      //     .then((UserCredential userCredential) async =>
-      //         await _saveUserToFirestore(userCredential));
+      await _auth.signInWithCredential(googleAuthCredential).then(
+          (UserCredential userCredential) async =>
+              await _saveUserToFirestore(userCredential));
+
+      //Navigate To Home Screen
+      Get.offAll(() => const HomeScreen());
     } on FirebaseAuthException catch (e) {
       handleFirebaseAuthException(e.code);
     } on PlatformException catch (e) {
@@ -59,17 +102,24 @@ class AuthController extends GetxController {
       return;
     } catch (e) {
       //print(e);
+    } finally {
+      _changeLoadingStatus(false);
     }
   }
 
-  void signInWithFacebook() async {
+  //Facebook SignIn
+  Future<void> signInWithFacebook() async {
+    //Start Loading
+    _changeLoadingStatus(true);
+
     //define signIn Method
     _signInType = AuthType.facebookSignIn;
 
+    // print('here we sign fb');
+
     try {
       // Trigger the sign-in flow
-      final LoginResult loginResult =
-          await FacebookAuth.instance.login();
+      final LoginResult loginResult = await FacebookAuth.instance.login();
 
       if (loginResult.accessToken != null) {
         // Create a credential from the access token
@@ -77,31 +127,35 @@ class AuthController extends GetxController {
             FacebookAuthProvider.credential(
                 loginResult.accessToken!.token);
 
-        //TODO : Once signed in, return the UserCredential
-        // await _auth
-        //     .signInWithCredential(facebookAuthCredential)
-        //     .then((UserCredential userCredential) async =>
-        //         await _saveUserToFirestore(userCredential));
+        await _auth.signInWithCredential(facebookAuthCredential).then(
+            (UserCredential userCredential) async =>
+                await _saveUserToFirestore(userCredential));
       }
+
+      //Navigate to Home Screen
+      Get.offAll(() => const HomeScreen());
     } on FirebaseAuthException catch (e) {
       handleFirebaseAuthException(e.code);
     } on PlatformException catch (e) {
       handleFirebaseAuthException(e.code);
     } catch (e) {
       //print(e);
+    } finally {
+      _changeLoadingStatus(false);
     }
   }
 
   //email & password
-  Future<void> signInWithEmailAndPassword(
-      String email, String password) async {
+  Future<void> signInWithEmailAndPassword() async {
+    //Start Loading
+    _changeLoadingStatus(true);
     //define signIn Method
     _signInType = AuthType.emailSignIn;
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(
-        email: email.trim(),
-        password: password,
+        email: loginEmail.text.trim(),
+        password: loginPassword.text,
       )
           .then((credentials) async {
         //in case the user deleted the app along with it's local data
@@ -118,8 +172,9 @@ class AuthController extends GetxController {
         // });
         return credentials;
       });
-      //TODO : Navigate to Control View
-      // Get.offAll(() => const LoginControlView());
+
+      //Navigate to the Home Screen
+      Get.offAll(() => const HomeScreen());
       // print(userCredential);
     } on SocketException {
       //print('network error');
@@ -137,64 +192,74 @@ class AuthController extends GetxController {
       //   snackPosition: SnackPosition.BOTTOM,
       // );
       handleFirebaseAuthException(e.code);
+    } finally {
+      _changeLoadingStatus(false);
     }
   }
 
-  void signUpWithEmailAndPassword() async {
-    // //define signIn Method
-    // _signInType = AuthType.emailSignIn;
-    // try {
-    //   await FirebaseAuth.instance
-    //       .createUserWithEmailAndPassword(
-    //         email: email!.trim(),
-    //         password: password!,
-    //       )
-    //       .then((UserCredential userCredential) async =>
-    //           await _saveUserToFirestore(userCredential));
-    //
-    //   //Navigate to Home View
-    //   Get.offAll(() => const LoginControlView());
-    // } on FirebaseAuthException catch (e) {
-    //   // if (e.code == 'weak-password') {
-    //   //   print('The password provided is too weak.');
-    //   // } else if (e.code == 'email-already-in-use') {
-    //   //   print('The account already exists for that email.');
-    //   // }
-    //   handleFirebaseAuthException(e.code);
-    // } catch (e) {
-    //   //print(e);
-    // }
+  Future<void> signUpWithEmailAndPassword() async {
+    //Start Loading
+    _changeLoadingStatus(true);
+    //define signIn Method
+    _signInType = AuthType.emailSignIn;
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: loginEmail.text.trim(),
+            password: loginPassword.text,
+          )
+          .then((UserCredential userCredential) async =>
+              await _saveUserToFirestore(userCredential));
+
+      //Navigate to Home Screen
+      Get.offAll(() => const HomeScreen());
+    } on FirebaseAuthException catch (e) {
+      // if (e.code == 'weak-password') {
+      //   print('The password provided is too weak.');
+      // } else if (e.code == 'email-already-in-use') {
+      //   print('The account already exists for that email.');
+      // }
+      handleFirebaseAuthException(e.code);
+    } catch (e) {
+      // print(e);
+    } finally {
+      _changeLoadingStatus(false);
+    }
   }
-  //
-  // Future<void> _saveUserToFirestore(
-  //     UserCredential userCredential) async {
-  //   final UserModel userModel = UserModel(
-  //     userId: userCredential.user?.uid,
-  //     name: name ?? userCredential.user?.displayName,
-  //     email: userCredential.user?.email,
-  //     profilePic: _signInType == AuthType.emailSignIn
-  //         ? 'default'
-  //         //google login
-  //         : _signInType == AuthType.googleSignIn
-  //             ? userCredential.user?.photoURL
-  //                 ?.replaceAll('s96-c', 's400-c')
-  //                 .toString()
-  //             //facebook login
-  //             : '${userCredential.user?.photoURL}?height=500',
-  //   );
-  //
-  //   // print(userCredential.user?.photoURL);
-  //
-  //   //TODO : Save the userData to the CloudFireStore
-  //   // await FirestoreUser().addUserToFirestore(userModel);
-  //   //TODO :Save the userData to the LocalDataStorage Too
-  //   // await _saveUserToLocalStorage(userModel);
-  // }
-  //
-  // Future<void> _saveUserToLocalStorage(
-  //     UserModel userModel) async {
-  //   await _localDataStorage.setUserData(userModel);
-  // }
+
+  Future<void> _saveUserToFirestore(UserCredential userCredential) async {
+    final UserModel userModel = UserModel(
+      id: userCredential.user?.uid,
+      name: _signInType == AuthType.emailSignIn
+          ? signupName.text
+          : userCredential.user!.displayName,
+      email: userCredential.user?.email!,
+      imageUrl: _signInType == AuthType.emailSignIn
+          ? 'default'
+          //google login
+          : _signInType == AuthType.googleSignIn
+              ? userCredential.user?.photoURL
+                  ?.replaceAll('s96-c', 's400-c')
+                  .toString()
+              //facebook login
+              : '${userCredential.user?.photoURL}?height=500',
+      address: signupAddress.text,
+      mobileNumber: int.tryParse(signupMobileNumber.text) ?? 0,
+      points: 0,
+      payments: [],
+      orders: [],
+    );
+
+    // print(userCredential.user?.photoURL);
+
+    await FirestoreUser().addUserToFirestore(userModel);
+    //TODO :Save the userData to the LocalDataStorage Too
+    await _saveUserToLocalStorage(userModel);
+  }
+
+  Future<void> _saveUserToLocalStorage(UserModel userModel) async {
+    // await _localDataStorage.setUserData(userModel);
+  }
 
   //FirebaseException Handling
   static void handleFirebaseAuthException(String? errorCode) {
@@ -219,8 +284,7 @@ class AuthController extends GetxController {
         break;
       case "ERROR_TOO_MANY_REQUESTS":
       case "operation-not-allowed":
-        errorMessage =
-            "Too many requests to log into this account.";
+        errorMessage = "Too many requests to log into this account.";
         break;
       case "ERROR_OPERATION_NOT_ALLOWED":
         errorMessage = "Server error, please try again later.";
@@ -237,18 +301,89 @@ class AuthController extends GetxController {
     Get.snackbar(
       'Error : ',
       errorMessage,
+      messageText: MyText(
+        text: errorMessage,
+        containerAlignment: Alignment.center,
+        fontWeight: FontWeight.w800,
+      ),
       colorText: Colors.black,
       snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: kMainAppColor,
     );
   }
 
-  void signOut() {
-    //sign out from google account
-    GoogleSignIn().signOut();
-    //sign out from email/password
-    _auth.signOut();
+  void changePassword(String currentPassword, String newPassword) async {
+    final user = _auth.currentUser;
+    final cred = EmailAuthProvider.credential(
+        email: user?.email as String, password: currentPassword);
+
+    user!.reauthenticateWithCredential(cred).then((value) {
+      user.updatePassword(newPassword).then((_) async {
+        //Success, do something
+        Get.snackbar(
+          'Error : ',
+          'Password is Changed Successfully.',
+          messageText: const MyText(
+            text: 'Password is Changed Successfully.',
+            containerAlignment: Alignment.center,
+            fontWeight: FontWeight.w800,
+          ),
+          colorText: Colors.black,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: kMainAppColor,
+        );
+        await signOut();
+      }).catchError((error) {
+        //Error, show something
+        Get.snackbar(
+          'Error : ',
+          'There was an error!',
+          messageText: const MyText(
+            text: 'There was an error!',
+            containerAlignment: Alignment.center,
+            fontWeight: FontWeight.w800,
+          ),
+          colorText: Colors.black,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: kMainAppColor,
+        );
+      });
+    }).catchError((err) {
+      Get.snackbar(
+        'Error : ',
+        'There was an error!',
+        messageText: const MyText(
+          text: 'There was an error!',
+          containerAlignment: Alignment.center,
+          fontWeight: FontWeight.w800,
+        ),
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: kMainAppColor,
+      );
+    });
+  }
+
+  Future<void> signOut() async {
+    switch (_signInType) {
+      case AuthType.emailSignIn:
+        //sign out from email/password
+        await _auth.signOut();
+        break;
+      case AuthType.facebookSignIn:
+        final _fa = FacebookAuth.instance;
+        await _fa.logOut();
+        break;
+      case AuthType.googleSignIn:
+        //sign out from google account
+        final _go = GoogleSignIn();
+        await _go.signOut();
+        await _go.disconnect();
+        break;
+    }
+
     //clear the local user data storage
-    //TODO - Some Localstorage clear here
+    //TODO - Some Local storage clear here
     //reset the state user value so we can go back to the login screen
     _user.value = null;
     //print(user);

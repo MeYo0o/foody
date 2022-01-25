@@ -97,13 +97,13 @@ class _PinCodeVerificationScreenState
           )
         ],
         onCompleted: (v) {
-          print("Completed");
+          // print("Completed");
         },
         // onTap: () {
         //   print("Pressed");
         // },
         onChanged: (value) {
-          print(value);
+          // print(value);
           setState(() {
             currentText = value;
           });
