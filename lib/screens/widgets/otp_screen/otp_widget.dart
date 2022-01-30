@@ -10,24 +10,20 @@ class PinCodeVerificationScreen extends StatefulWidget {
   const PinCodeVerificationScreen({Key? key}) : super(key: key);
 
   @override
-  _PinCodeVerificationScreenState createState() =>
-      _PinCodeVerificationScreenState();
+  _PinCodeVerificationScreenState createState() => _PinCodeVerificationScreenState();
 }
 
-class _PinCodeVerificationScreenState
-    extends State<PinCodeVerificationScreen> {
+class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
   late final onTapRecognizer;
 
-  TextEditingController textEditingController =
-      TextEditingController();
+  TextEditingController textEditingController = TextEditingController();
   // ..text = "123456";
 
   late StreamController<ErrorAnimationType> errorController;
 
   bool hasError = false;
   String currentText = "";
-  final GlobalKey<ScaffoldState> scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -74,14 +70,13 @@ class _PinCodeVerificationScreenState
           borderRadius: BorderRadius.circular(5.r),
           fieldHeight: 60.h,
           fieldWidth: 50.w,
-          activeFillColor:
-              hasError ? Colors.orange : Colors.white,
+          activeFillColor: hasError ? Colors.orange : Colors.white,
           inactiveColor: kRegularFontColor,
           activeColor: kMainAppColor,
           selectedColor: kMainAppColor,
         ),
         cursorColor: Colors.black,
-        animationDuration: Duration(milliseconds: 300),
+        animationDuration: const Duration(milliseconds: 300),
         textStyle: TextStyle(fontSize: 20.sp, height: 1.6.h),
         // backgroundColor: Colors.blue.shade50,
         // enableActiveFill: true,

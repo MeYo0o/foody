@@ -6,37 +6,31 @@ import 'package:foody/core/services/firestore_user.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart'
-    as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class GeneralController extends GetxController {
   final user = FirebaseAuth.instance.currentUser;
-  var userData;
+  DocumentSnapshot<Object?>? userData;
 
   @override
   void onInit() async {
     super.onInit();
-    userData = await FirestoreUser()
-        .getCurrentUser(user?.uid as String);
-    print(userData['id']);
+    userData = await FirestoreUser().getCurrentUser(user?.uid as String);
+    // print(userData!['id']);
   }
 
   //Image Picking & Cropping Logic for Android/iOS ----> Adjust the Image Quality Later
-  Future<File?> getProfPicNUpload(
-      ImageSource source) async {
+  Future<File?> getProfPicNUpload(ImageSource source) async {
     try {
-      final PickedFile? pickedImage =
-          await ImagePicker().getImage(
+      final XFile? pickedImage = await ImagePicker().pickImage(
         source: source,
         imageQuality: 100,
         maxWidth: 700,
       );
       if (pickedImage != null) {
-        File? pickedFile;
-        pickedFile = await ImageCropper.cropImage(
+        File? pickedFile = await ImageCropper.cropImage(
           sourcePath: pickedImage.path,
-          aspectRatio:
-              const CropAspectRatio(ratioX: 1, ratioY: 1),
+          aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
           compressQuality: 70,
           maxHeight: 700,
           maxWidth: 700,
@@ -54,24 +48,20 @@ class GeneralController extends GetxController {
         firebase_storage.Reference profPicRef = storage
             .ref()
             .child('email_type_users_profilePic')
-            .child(userData['id'].jpeg);
+            .child(userData!['id'].jpeg);
 
-        String imageUrl = await firebase_storage
-            .FirebaseStorage.instance
+        String imageUrl = await firebase_storage.FirebaseStorage.instance
             .ref()
             .child('email_type_users_profilePic')
-            .child(userData['id'].jpeg)
+            .child(userData!['id'].jpeg)
             .getDownloadURL();
         final firestore = FirebaseFirestore.instance;
-        await firestore
-            .collection('users')
-            .doc(userData['id'])
-            .update({
+        await firestore.collection('users').doc(userData!['id']).update({
           'imageUrl': imageUrl,
         });
       }
     } catch (err) {
-      print(err);
+      // print(err);
     } finally {}
   }
 }

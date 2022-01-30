@@ -24,7 +24,6 @@ class AuthController extends GetxController {
   AuthType _signInType = AuthType.emailSignIn;
   final Rxn<User> _user = Rxn<User>();
   User? get user => _user.value;
-  var userData;
 
   //Loading Indicator
   bool _isLoading = false;
@@ -45,8 +44,7 @@ class AuthController extends GetxController {
   final TextEditingController signupMobileNumber = TextEditingController();
   final TextEditingController signupAddress = TextEditingController();
   final TextEditingController signupPassword = TextEditingController();
-  final TextEditingController signupConfirmPassword =
-      TextEditingController();
+  final TextEditingController signupConfirmPassword = TextEditingController();
   final signupFormKey = GlobalKey<FormState>();
 
   @override
@@ -78,12 +76,10 @@ class AuthController extends GetxController {
       // print(googleUser);
 
       //obtain the auth details from the user
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser!.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
 
       //create a new credential for the user's device
-      final AuthCredential googleAuthCredential =
-          GoogleAuthProvider.credential(
+      final AuthCredential googleAuthCredential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
@@ -124,8 +120,7 @@ class AuthController extends GetxController {
       if (loginResult.accessToken != null) {
         // Create a credential from the access token
         final OAuthCredential facebookAuthCredential =
-            FacebookAuthProvider.credential(
-                loginResult.accessToken!.token);
+            FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
         await _auth.signInWithCredential(facebookAuthCredential).then(
             (UserCredential userCredential) async =>
@@ -294,8 +289,7 @@ class AuthController extends GetxController {
         errorMessage = "Email address is invalid.";
         break;
       default:
-        errorMessage =
-            "Login failed. Please Check your Internet Connetion.";
+        errorMessage = "Login failed. Please Check your Internet Connetion.";
         break;
     }
     Get.snackbar(

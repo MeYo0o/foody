@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foody/constants/colors.dart';
 import 'package:foody/controllers/auth_controller.dart';
 import 'package:foody/models/form_field_type.dart';
-import 'package:foody/screens/home_screen.dart';
 import 'package:foody/screens/signup_screen.dart';
 import 'package:foody/screens/widgets/common/loading_widget.dart';
 import 'package:foody/screens/widgets/common/my_button.dart';
@@ -12,7 +11,6 @@ import 'package:foody/screens/widgets/common/my_text.dart';
 import 'package:foody/screens/widgets/common/social_button.dart';
 import 'package:foody/screens/widgets/common/span_text.dart';
 import 'package:get/get.dart';
-
 import 'widgets/login_screen/my_text_form_field.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -83,21 +81,18 @@ class LoginScreen extends StatelessWidget {
                           MyTextFormField(
                             controller: authC.loginPassword,
                             hintText: 'Your Password',
-                            formFieldType:
-                                FormFieldType.password,
+                            formFieldType: FormFieldType.password,
                           ),
                           SizedBox(height: 30.h),
                           MyButton(
                             text: 'Login',
                             isPrimary: true,
                             func: () async {
-                              final isValid = authC
-                                  .loginFormKey.currentState!
-                                  .validate();
+                              final isValid =
+                                  authC.loginFormKey.currentState!.validate();
                               FocusScope.of(context).unfocus();
                               if (isValid) {
-                                await authC
-                                    .signInWithEmailAndPassword();
+                                await authC.signInWithEmailAndPassword();
                               }
                             },
                           ),
@@ -119,8 +114,7 @@ class LoginScreen extends StatelessWidget {
                           SocialButton(
                             socialTitle: 'Login With '
                                 'Facebook',
-                            socialIcon:
-                                FontAwesomeIcons.facebookF,
+                            socialIcon: FontAwesomeIcons.facebookF,
                             socialColor: kFacebookButtonColor,
                             func: () async {
                               authC.signInWithFacebook();
@@ -139,14 +133,12 @@ class LoginScreen extends StatelessWidget {
                           SizedBox(height: 30.h),
                           InkWell(
                             onTap: () {
-                              Get.off(
-                                  () => const SignUpScreen());
+                              Get.off(() => const SignUpScreen());
 
                               // Get.off(() => const HomeScreen());
                             },
                             child: const SpanText(
-                                firstText:
-                                    "Don't have an Account?",
+                                firstText: "Don't have an Account?",
                                 secondText: 'Sign Up'),
                           ),
                         ],

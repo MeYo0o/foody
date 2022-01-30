@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foody/firebase_options.dart';
 import 'package:foody/screens/navigation_screen.dart';
 import 'package:foody/screens/profile_screen.dart';
-import 'package:foody/screens/reset_password_screen.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -31,13 +30,12 @@ class Foody extends StatelessWidget {
         builder: (context, widget) {
           ScreenUtil.setContext(context);
           return MediaQuery(
-              data: MediaQuery.of(context)
-                  .copyWith(textScaleFactor: 1.0),
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
               child: widget!);
         },
         debugShowCheckedModeBanner: false,
         title: 'Foody',
-        home: const ProfileScreen(),
+        home: const NavigationScreen(),
       ),
     );
   }

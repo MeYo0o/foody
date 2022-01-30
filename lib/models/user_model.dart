@@ -52,16 +52,16 @@ class UserModel {
 
   @override
   String toString() {
-    return 'User{' +
-        ' id: $id,' +
-        ' name: $name,' +
-        ' imageUrl: $imageUrl,' +
-        ' mobileNumber: $mobileNumber,' +
-        ' address: $address,' +
-        ' email: $email,' +
-        ' points: $points,' +
-        ' orders: $orders,' +
-        ' payments: $payments,' +
+    return 'User{'
+        ' id: $id,'
+        ' name: $name,'
+        ' imageUrl: $imageUrl,'
+        ' mobileNumber: $mobileNumber,'
+        ' address: $address,'
+        ' email: $email,'
+        ' points: $points,'
+        ' orders: $orders,'
+        ' payments: $payments,'
         '}';
   }
 

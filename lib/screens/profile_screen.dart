@@ -1,10 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foody/constants/colors.dart';
-import 'package:foody/constants/text_styles.dart';
-import 'package:foody/controllers/auth_controller.dart';
 import 'package:foody/controllers/general_controller.dart';
 import 'package:foody/screens/widgets/common/my_text.dart';
 import 'package:foody/screens/widgets/profile_screen/profile_text_field.dart';
@@ -22,8 +19,7 @@ class ProfileScreen extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 10.w),
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: 50.h),
                 MyText(
@@ -33,32 +29,25 @@ class ProfileScreen extends StatelessWidget {
                   containerAlignment: Alignment.topLeft,
                 ),
                 SizedBox(height: 10.h),
-                if (genC.userData['imageUrl'] == 'default')
+                if (genC.userData!['imageUrl'] == 'default')
                   Center(
                     child: InkWell(
                       onTap: () {
-                        genC.getProfPicNUpload(
-                            ImageSource.camera);
+                        genC.getProfPicNUpload(ImageSource.camera);
                       },
                       child: CircleAvatar(
                         // backgroundColor: Colors.transparent,
                         radius: 70.r,
                         child: Stack(
                           children: [
-                            Image.asset(
-                                'assets/images/default_avatar.png'),
+                            Image.asset('assets/images/default_avatar.png'),
                             Positioned(
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: Colors.black45,
-                                  borderRadius:
-                                      BorderRadius.only(
-                                    bottomLeft:
-                                        Radius.circular(
-                                            20.r),
-                                    bottomRight:
-                                        Radius.circular(
-                                            20.r),
+                                  borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(20.r),
+                                    bottomRight: Radius.circular(20.r),
                                   ),
                                 ),
                                 height: 30.h,
@@ -83,8 +72,7 @@ class ProfileScreen extends StatelessWidget {
                     //TODO - Go to Edit Profile Screen
                   },
                   child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         FontAwesomeIcons.pen,
@@ -106,13 +94,10 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 14.h),
                 MyText(
-                  text: 'Hi there ' +
-                      genC.userData['name'] +
-                      '!',
+                  text: 'Hi there ' + genC.userData!['name'] + '!',
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
-                  containerPadding: EdgeInsets.symmetric(
-                      horizontal: 80.w),
+                  containerPadding: EdgeInsets.symmetric(horizontal: 80.w),
                 ),
                 SizedBox(height: 50.h),
                 const ProfileTextField(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foody/controllers/auth_controller.dart';
-import 'package:foody/controllers/general_controller.dart';
 import 'package:foody/controllers/navigation_controller.dart';
 import 'package:foody/screens/auth_screen.dart';
 import 'package:foody/screens/home_screen.dart';
@@ -23,8 +22,7 @@ class NavigationScreen extends StatelessWidget {
                   return FutureBuilder(
                     future: navC.appInitialization(),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState ==
-                          ConnectionState.waiting) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
                         return const SplashScreen();
                       } else {
                         return const AuthScreen();

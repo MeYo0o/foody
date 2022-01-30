@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foody/constants/colors.dart';
@@ -11,15 +10,12 @@ class NewPasswordScreen extends StatefulWidget {
   const NewPasswordScreen({Key? key}) : super(key: key);
 
   @override
-  _NewPasswordScreenState createState() =>
-      _NewPasswordScreenState();
+  _NewPasswordScreenState createState() => _NewPasswordScreenState();
 }
 
 class _NewPasswordScreenState extends State<NewPasswordScreen> {
-  final TextEditingController _password =
-      TextEditingController();
-  final TextEditingController _confirmPassword =
-      TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _confirmPassword = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -41,8 +37,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                   ),
                   SizedBox(height: 20.h),
                   Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 40.w),
+                    padding: EdgeInsets.symmetric(horizontal: 40.w),
                     child: const MyText(
                       text:
                           'Please enter your email to receive a  link to  create a new password via email',

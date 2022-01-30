@@ -18,13 +18,11 @@ class ProfileTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<GeneralController>(builder: (genC) {
-      final field = genC.userData[dbField].toString();
+      final field = genC.userData![dbField].toString();
       return TextField(
         enabled: false,
         controller: TextEditingController(
-          text: dbField == 'mobileNumber'
-              ? '0' + field
-              : field,
+          text: dbField == 'mobileNumber' ? '0' + field : field,
         ),
         decoration: InputDecoration(
           labelText: label,

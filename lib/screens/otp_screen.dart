@@ -1,14 +1,11 @@
 import 'dart:async';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foody/constants/colors.dart';
-import 'package:foody/models/form_field_type.dart';
 import 'package:foody/screens/widgets/common/my_button.dart';
 import 'package:foody/screens/widgets/common/my_text.dart';
 import 'package:foody/screens/widgets/common/span_text.dart';
-import 'package:foody/screens/widgets/login_screen/my_text_form_field.dart';
 import 'package:foody/screens/widgets/otp_screen/otp_widget.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
@@ -21,18 +18,16 @@ class OTPScreen extends StatefulWidget {
 
 class _OTPScreenState extends State<OTPScreen> {
   final _formKey = GlobalKey<FormState>();
-  var onTapRecognizer;
+  dynamic onTapRecognizer;
 
-  TextEditingController textEditingController =
-      TextEditingController();
+  TextEditingController textEditingController = TextEditingController();
   // ..text = "123456";
 
   late StreamController<ErrorAnimationType> errorController;
 
   bool hasError = false;
   String currentText = "";
-  final GlobalKey<ScaffoldState> scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
 
   @override
