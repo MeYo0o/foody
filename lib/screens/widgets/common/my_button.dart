@@ -13,7 +13,7 @@ class MyButton extends StatelessWidget {
 
   final String text;
   final bool isPrimary;
-  final void Function() func;
+  final void Function()? func;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -21,14 +21,12 @@ class MyButton extends StatelessWidget {
       child: ElevatedButton(
         child: MyText(
           text: text,
-          color:
-              isPrimary ? Colors.white : const Color(0xFFFC6011),
+          color: isPrimary ? Colors.white : const Color(0xFFFC6011),
           fontSize: 16.sp,
           fontWeight: FontWeight.w600,
         ),
         style: ElevatedButton.styleFrom(
-          primary:
-              isPrimary ? const Color(0xFFFC6011) : Colors.white,
+          primary: isPrimary ? const Color(0xFFFC6011) : Colors.white,
           padding: EdgeInsets.symmetric(vertical: 15.h),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(40.r),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:foody/constants/colors.dart';
 import 'package:foody/core/services/firestore_user.dart';
 import 'package:foody/models/user_model.dart';
+import 'package:foody/screens/email_verification_screen.dart';
 import 'package:foody/screens/home_screen.dart';
 import 'package:foody/screens/navigation_screen.dart';
 import 'package:foody/screens/widgets/common/my_text.dart';
@@ -55,6 +57,9 @@ class AuthController extends GetxController {
     signupMobileNumber.dispose();
     signupAddress.dispose();
     signupConfirmPassword.dispose();
+    if (_timer != null) {
+      _timer!.cancel();
+    }
     super.dispose();
   }
 
@@ -63,6 +68,115 @@ class AuthController extends GetxController {
     super.onInit();
     _user.bindStream(_auth.authStateChanges());
   }
+
+  //Email Verification
+  int _funcCount = 0;
+  bool _isEmailVerified = false;
+  bool get isEmailVerified => _isEmailVerified;
+  bool _canResendEmailVerification = false;
+  bool get canResendEmailVerification => _canResendEmailVerification;
+  Timer? _timer;
+  Future<void> getEmailVerificationStatus() async {
+    // print(_funcCount++);
+    // await Future.delayed(Duration.zero);
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 5),
+      (timer) async {
+        //reloading the user so we can re-check if it's email verified
+        _user.value = _auth.currentUser!..reload();
+        Future.delayed(const Duration(seconds: 2));
+        _isEmailVerified = user!.emailVerified;
+        if (isEmailVerified) {
+          // print('verified');
+          timer.cancel();
+          update();
+          return;
+        } else if (!isEmailVerified) {
+          // print('not verified');
+          if (!canResendEmailVerification) {
+            _canResendEmailVerification = true;
+            update();
+          }
+        }
+      },
+    );
+    // if (isEmailVerified) {
+    //   _timer!.cancel();
+    //   update();
+    //   Get.offAll(() => const HomeScreen());
+    // } else if (!isEmailVerified) {
+    //   _timer = Timer.periodic(
+    //     const Duration(seconds: 5),
+    //     (timer) async {
+    //       if (!_canResendEmailVerification) {
+    //         _canResendEmailVerification = true;
+    //         update();
+    //       }
+    //     },
+    //   );
+    // }
+  }
+
+  Future<void> sendVerificationEmail() async {
+    // print('sending verification email');
+    try {
+      await user!.sendEmailVerification();
+      if (_canResendEmailVerification) {
+        _canResendEmailVerification = false;
+        update();
+      }
+      Get.snackbar(
+        'Please Check your email : ',
+        'A Verification email has been sent!',
+        messageText: const MyText(
+          text: 'A Verification email has been sent!',
+          containerAlignment: Alignment.center,
+          fontWeight: FontWeight.w800,
+        ),
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: kMainAppColor,
+      );
+    } on PlatformException {
+      Get.snackbar(
+        'Error : ',
+        'Network Error!',
+        messageText: const MyText(
+          text: 'Network Error!',
+          containerAlignment: Alignment.center,
+          fontWeight: FontWeight.w800,
+        ),
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: kMainAppColor,
+      );
+    } catch (err) {
+      Get.snackbar(
+        'Error : ',
+        err.toString(),
+        messageText: MyText(
+          text: err.toString(),
+          containerAlignment: Alignment.center,
+          fontWeight: FontWeight.w800,
+        ),
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: kMainAppColor,
+      );
+    }
+  }
+
+  //Mobile Phone Verification
+  // Future<void> verifyMobileNumber() async {
+  //   await FirebaseAuth.instance.verifyPhoneNumber(
+  //     phoneNumber: '+20 115 888 9193',
+  //     verificationCompleted: (PhoneAuthCredential credential) {},
+  //     verificationFailed: (FirebaseAuthException e) {},
+  //     codeSent: (String verificationId, int? resendToken) {},
+  //     codeAutoRetrievalTimeout: (String verificationId) {},
+  //   );
+  // }
 
   //Google SignIn
   void signInWithGoogle() async {
@@ -85,12 +199,13 @@ class AuthController extends GetxController {
       );
       // print(credential);
 
-      await _auth.signInWithCredential(googleAuthCredential).then(
-          (UserCredential userCredential) async =>
-              await _saveUserToFirestore(userCredential));
-
-      //Navigate To Home Screen
-      Get.offAll(() => const HomeScreen());
+      await _auth
+          .signInWithCredential(googleAuthCredential)
+          .then((UserCredential userCredential) async {
+        await _saveUserToFirestore(userCredential);
+        //Navigate To Home Screen
+        Get.offAll(() => const EmailVerificationScreen());
+      });
     } on FirebaseAuthException catch (e) {
       handleFirebaseAuthException(e.code);
     } on PlatformException catch (e) {
@@ -123,12 +238,13 @@ class AuthController extends GetxController {
             FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
         await _auth.signInWithCredential(facebookAuthCredential).then(
-            (UserCredential userCredential) async =>
-                await _saveUserToFirestore(userCredential));
+          (UserCredential userCredential) async {
+            await _saveUserToFirestore(userCredential);
+            //Navigate to Home Screen
+            Get.offAll(() => const EmailVerificationScreen());
+          },
+        );
       }
-
-      //Navigate to Home Screen
-      Get.offAll(() => const HomeScreen());
     } on FirebaseAuthException catch (e) {
       handleFirebaseAuthException(e.code);
     } on PlatformException catch (e) {
@@ -165,14 +281,28 @@ class AuthController extends GetxController {
         //       userDocumentSnapshot.data()
         //           as Map<String, dynamic>?));
         // });
+        //Navigate to the Home Screen
+        Get.offAll(() => const EmailVerificationScreen());
         return credentials;
       });
 
-      //Navigate to the Home Screen
-      Get.offAll(() => const HomeScreen());
       // print(userCredential);
     } on SocketException {
-      //print('network error');
+      // print('network error');
+      Get.snackbar(
+        'Alert : ',
+        'Network Error!',
+        messageText: const MyText(
+          text: 'Network Error!',
+          containerAlignment: Alignment.center,
+          fontWeight: FontWeight.w800,
+        ),
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: kMainAppColor,
+      );
+      _changeLoadingStatus(false);
+
       return;
     } on FirebaseAuthException catch (e) {
       // if (e.code == 'user-not-found') {
@@ -197,17 +327,20 @@ class AuthController extends GetxController {
     _changeLoadingStatus(true);
     //define signIn Method
     _signInType = AuthType.emailSignIn;
-    try {
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-            email: loginEmail.text.trim(),
-            password: loginPassword.text,
-          )
-          .then((UserCredential userCredential) async =>
-              await _saveUserToFirestore(userCredential));
 
-      //Navigate to Home Screen
-      Get.offAll(() => const HomeScreen());
+    try {
+      await _auth
+          .createUserWithEmailAndPassword(
+        email: signupEmail.text.trim(),
+        password: signupPassword.text,
+      )
+          .then(
+        (UserCredential userCredential) async {
+          await _saveUserToFirestore(userCredential);
+          //Navigate to Home Screen
+          Get.offAll(() => const EmailVerificationScreen());
+        },
+      );
     } on FirebaseAuthException catch (e) {
       // if (e.code == 'weak-password') {
       //   print('The password provided is too weak.');
@@ -231,15 +364,15 @@ class AuthController extends GetxController {
       email: userCredential.user?.email!,
       imageUrl: _signInType == AuthType.emailSignIn
           ? 'default'
-          //google login
+          //google login pic
           : _signInType == AuthType.googleSignIn
               ? userCredential.user?.photoURL
                   ?.replaceAll('s96-c', 's400-c')
                   .toString()
-              //facebook login
+              //facebook login pic
               : '${userCredential.user?.photoURL}?height=500',
       address: signupAddress.text,
-      mobileNumber: int.tryParse(signupMobileNumber.text) ?? 0,
+      mobileNumber: signupMobileNumber.text,
       points: 0,
       payments: [],
       orders: [],
@@ -289,6 +422,7 @@ class AuthController extends GetxController {
         errorMessage = "Email address is invalid.";
         break;
       default:
+        // print(errorCode);
         errorMessage = "Login failed. Please Check your Internet Connetion.";
         break;
     }
@@ -307,47 +441,19 @@ class AuthController extends GetxController {
   }
 
   void changePassword(String currentPassword, String newPassword) async {
-    final user = _auth.currentUser;
-    final cred = EmailAuthProvider.credential(
-        email: user?.email as String, password: currentPassword);
-
-    user!.reauthenticateWithCredential(cred).then((value) {
-      user.updatePassword(newPassword).then((_) async {
-        //Success, do something
-        Get.snackbar(
-          'Error : ',
-          'Password is Changed Successfully.',
-          messageText: const MyText(
-            text: 'Password is Changed Successfully.',
-            containerAlignment: Alignment.center,
-            fontWeight: FontWeight.w800,
-          ),
-          colorText: Colors.black,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: kMainAppColor,
-        );
-        await signOut();
-      }).catchError((error) {
-        //Error, show something
-        Get.snackbar(
-          'Error : ',
-          'There was an error!',
-          messageText: const MyText(
-            text: 'There was an error!',
-            containerAlignment: Alignment.center,
-            fontWeight: FontWeight.w800,
-          ),
-          colorText: Colors.black,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: kMainAppColor,
-        );
-      });
-    }).catchError((err) {
+    _changeLoadingStatus(true);
+    try {
+      final user = _auth.currentUser;
+      final cred = EmailAuthProvider.credential(
+          email: user?.email as String, password: currentPassword);
+      await user!.reauthenticateWithCredential(cred);
+      await user.updatePassword(newPassword);
+      //Success, do something
       Get.snackbar(
-        'Error : ',
-        'There was an error!',
+        'Alert : ',
+        'Password is Changed Successfully.',
         messageText: const MyText(
-          text: 'There was an error!',
+          text: 'Password is Changed Successfully.',
           containerAlignment: Alignment.center,
           fontWeight: FontWeight.w800,
         ),
@@ -355,7 +461,37 @@ class AuthController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: kMainAppColor,
       );
-    });
+      await signOut();
+    } on SocketException {
+      Get.snackbar(
+        'Alert : ',
+        'Network Error!',
+        messageText: const MyText(
+          text: 'Network Error!',
+          containerAlignment: Alignment.center,
+          fontWeight: FontWeight.w800,
+        ),
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: kMainAppColor,
+      );
+    } catch (err) {
+      //Error, show something
+      Get.snackbar(
+        'Alert : ',
+        'Your Entered password is wrong!',
+        messageText: const MyText(
+          text: 'Your Entered password is wrong!',
+          containerAlignment: Alignment.center,
+          fontWeight: FontWeight.w800,
+        ),
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: kMainAppColor,
+      );
+    } finally {
+      _changeLoadingStatus(false);
+    }
   }
 
   Future<void> signOut() async {
@@ -372,7 +508,7 @@ class AuthController extends GetxController {
         //sign out from google account
         final _go = GoogleSignIn();
         await _go.signOut();
-        await _go.disconnect();
+        // await _go.disconnect();
         break;
     }
 

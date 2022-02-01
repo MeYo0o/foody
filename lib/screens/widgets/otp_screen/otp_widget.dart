@@ -4,16 +4,18 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foody/constants/colors.dart';
+import 'package:foody/controllers/auth_controller.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-class PinCodeVerificationScreen extends StatefulWidget {
-  const PinCodeVerificationScreen({Key? key}) : super(key: key);
+class PinCodeVerificationWidget extends StatefulWidget {
+  const PinCodeVerificationWidget({Key? key}) : super(key: key);
 
   @override
-  _PinCodeVerificationScreenState createState() => _PinCodeVerificationScreenState();
+  _PinCodeVerificationWidgetState createState() => _PinCodeVerificationWidgetState();
 }
 
-class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
+class _PinCodeVerificationWidgetState extends State<PinCodeVerificationWidget> {
   late final onTapRecognizer;
 
   TextEditingController textEditingController = TextEditingController();
@@ -53,13 +55,14 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
           color: Colors.yellow.shade600,
           fontWeight: FontWeight.bold,
         ),
-        length: 4,
+        length: 6,
         obscureText: false,
         obscuringCharacter: '*',
         animationType: AnimationType.fade,
         autovalidateMode: AutovalidateMode.onUserInteraction,
+        // textInputAction: TextInputAction.next,
         validator: (v) {
-          if (v!.length < 4) {
+          if (v!.length < 6) {
             return "OTP is not completed";
           } else {
             return null;
@@ -93,6 +96,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
         ],
         onCompleted: (v) {
           // print("Completed");
+          final authC = Get.find<AuthController>();
         },
         // onTap: () {
         //   print("Pressed");

@@ -2,7 +2,7 @@ class UserModel {
   final String? id;
   final String? name;
   final String? imageUrl;
-  final int? mobileNumber;
+  final String? mobileNumber;
   final String? address;
   final String? email;
   final int? points;
@@ -69,7 +69,7 @@ class UserModel {
     String? id,
     String? name,
     String? imageUrl,
-    int? mobileNumber,
+    String? mobileNumber,
     String? address,
     String? email,
     int? points,
@@ -108,7 +108,7 @@ class UserModel {
       id: map['id'] as String,
       name: map['name'] as String,
       imageUrl: map['imageUrl'] as String,
-      mobileNumber: map['mobileNumber'] as int,
+      mobileNumber: map['mobileNumber'] as String,
       address: map['address'] as String,
       email: map['email'] as String,
       points: map['points'] as int,

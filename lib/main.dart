@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foody/firebase_options.dart';
+import 'package:foody/screens/change_password_screen.dart';
+import 'package:foody/screens/more_screen.dart';
 import 'package:foody/screens/navigation_screen.dart';
+import 'package:foody/screens/otp_screen.dart';
 import 'package:foody/screens/profile_screen.dart';
+import 'package:foody/screens/signup_screen.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 

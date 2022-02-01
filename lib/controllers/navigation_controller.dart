@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foody/screens/auth_screen.dart';
+import 'package:foody/screens/email_verification_screen.dart';
 import 'package:foody/screens/splash_screen.dart';
 import 'package:get/get.dart';
 

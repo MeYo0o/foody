@@ -11,3 +11,7 @@ const Color kFacebookButtonColor = Color(0xFF367FC0);
 const Color kGoogleButtonColor = Color(0xFFDD4B39);
 
 const Color kOTPBGColor = Color(0xFF707070);
+
+const Color kContainerBGColor = Color(0xFFF6F6F6);
+const Color kContainerIconBGColor = Color(0xFFD8D8D8);
+const Color kContainerIconColor = Color(0xFF4A4B4D);

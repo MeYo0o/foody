@@ -3,10 +3,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foody/constants/colors.dart';
+import 'package:foody/controllers/auth_controller.dart';
 import 'package:foody/screens/widgets/common/my_button.dart';
 import 'package:foody/screens/widgets/common/my_text.dart';
 import 'package:foody/screens/widgets/common/span_text.dart';
 import 'package:foody/screens/widgets/otp_screen/otp_widget.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 class OTPScreen extends StatefulWidget {
@@ -70,20 +72,23 @@ class _OTPScreenState extends State<OTPScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 50.w),
                 child: const MyText(
-                  text:
-                      'Please check your mobile number 071*****12 continue to reset your password',
+                  text: 'Please check your mobile number and enter the code to '
+                      'continue',
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: kFontBodyColor,
                 ),
               ),
               SizedBox(height: 60.h),
-              const PinCodeVerificationScreen(),
+              const PinCodeVerificationWidget(),
               SizedBox(height: 45.h),
               MyButton(
                 text: 'Next',
                 isPrimary: true,
-                func: () {},
+                func: () {
+                  // final authC = Get.find<AuthController>();
+                  // authC.verifyMobileNumber();
+                },
               ),
               SizedBox(height: 30.h),
               const SpanText(

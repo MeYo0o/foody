@@ -33,9 +33,7 @@ class MyTextFormField extends StatelessWidget {
             : formFieldType == FormFieldType.number
                 ? TextInputType.number
                 : TextInputType.text,
-        obscureText: formFieldType == FormFieldType.password
-            ? true
-            : false,
+        obscureText: formFieldType == FormFieldType.password ? true : false,
         textInputAction: textInputAction ??
             (formFieldType == FormFieldType.password
                 ? TextInputAction.done
@@ -57,8 +55,7 @@ class MyTextFormField extends StatelessWidget {
           ),
           filled: true,
           fillColor: kTextFormFillColor,
-          contentPadding: EdgeInsets.symmetric(
-              horizontal: 20.w, vertical: 20.h),
+          contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
           hintText: hintText,
           hintStyle: const TextStyle(
             color: kRegularFontColor,
@@ -70,14 +67,16 @@ class MyTextFormField extends StatelessWidget {
         validator: (String? textValue) {
           if (textValue == null || textValue.isEmpty) {
             return 'This field can\'t be empty';
-          } else if (hintText == 'Mobile No') {
-            if (controller.text.length < 11) {
-              return 'please enter a valid number';
+          } else if (hintText == 'Mobile No ... ex: 011xxxxxxxx') {
+            if (controller.text.length < 11 || controller.text.length > 12) {
+              return 'please enter a valid Egyptian Mobile Number';
             }
-          } else if (hintText == 'Password' &&
-              controller.text.length < 8) {
+          } else if (hintText == 'Password' && controller.text.length < 8) {
             return 'Please Enter At least 8 character password';
-          } else if (hintText == 'Confirm Password') {
+          } else if (hintText == 'Confirm Password' ||
+              hintText ==
+                  'Confirm New '
+                      'Password') {
             if (controller.text != passwordController!.text) {
               return 'Passwords don\'t match';
             }
