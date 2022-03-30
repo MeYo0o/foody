@@ -26,6 +26,8 @@ This is a full Food Delivery application using Flutter & Firebase (Authenticatio
   
 ## Video
 
+[![Showcase Video](https://img.youtube.com/vi/gG_0tWrfS0c/0.jpg)](https://www.youtube.com/watch?v=gG_0tWrfS0c)
+
 ## Screenshots
 
 <table>
